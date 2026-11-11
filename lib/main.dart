@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false, // remove the debug ribbon
       title: 'Coffee Gallery',
       theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.brown),
       home: const GalleryPage(),
@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// one coffee photo + its caption
 class CoffeeItem {
   final String image;
   final String title;
@@ -25,6 +26,7 @@ class CoffeeItem {
   const CoffeeItem(this.image, this.title);
 }
 
+// stateful because the dots change when I swipe
 class GalleryPage extends StatefulWidget {
   const GalleryPage({super.key});
 
@@ -33,14 +35,18 @@ class GalleryPage extends StatefulWidget {
 }
 
 class _GalleryPageState extends State<GalleryPage> {
+  // to add a photo: put it in assets/images then add a line here
   static const List<CoffeeItem> items = [
-    CoffeeItem('assets/images/coffee1.jpg', 'Cozy Cup'),
+    CoffeeItem('assets/images/coffee1.jpg', 'Rise & Brew'),
     CoffeeItem('assets/images/coffee2.jpg', 'Latte Time'),
   ];
 
   static const String quote = 'Good days start with good coffee.';
 
+  // 0.8 so you can see a bit of the next card
   final PageController _controller = PageController(viewportFraction: 0.8);
+
+  // which photo I'm on right now
   int _current = 0;
 
   @override
@@ -60,6 +66,7 @@ class _GalleryPageState extends State<GalleryPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // heading
           const Padding(
             padding: EdgeInsets.fromLTRB(20, 20, 20, 12),
             child: Text(
@@ -71,7 +78,8 @@ class _GalleryPageState extends State<GalleryPage> {
               ),
             ),
           ),
-          // Quote panel
+
+          // quote box
           Container(
             width: double.infinity,
             margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
@@ -108,10 +116,13 @@ class _GalleryPageState extends State<GalleryPage> {
               ],
             ),
           ),
+
+          // swipe left/right to change photo
           Expanded(
             child: PageView.builder(
               controller: _controller,
               itemCount: items.length,
+              // update _current so the dots follow
               onPageChanged: (index) {
                 setState(() {
                   _current = index;
@@ -122,10 +133,12 @@ class _GalleryPageState extends State<GalleryPage> {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Center(
+                    // photos are 3:4 so keep the card the same
                     child: AspectRatio(
                       aspectRatio: 3 / 4,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
+                        // stack = caption sits on top of the photo
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
@@ -156,6 +169,8 @@ class _GalleryPageState extends State<GalleryPage> {
               },
             ),
           ),
+
+          // dots at the bottom, the long one is the current photo
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Row(
